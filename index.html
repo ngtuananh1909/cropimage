@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Image Cropper</title>
+    <link  href="cropperjs/cropper.css" rel="stylesheet">
+    <script src="cropperjs/cropper.js"></script>
+    <link  href="style.css" rel="stylesheet">
+</head>
+<style>
+    img {
+        display: block;
+        max-width: 100%;
+    }
+    .main-container {
+        width: 35vw;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+    .img-container {
+        margin-bottom: 10px;
+    }
+    .cropped-container {
+        width: 400px;
+        margin: auto;
+        text-align: center;
+        justify-content: center;
+        background-color: ghostwhite;
+        padding: 20px 20px;
+        display: none;
+        margin-top: 10px;
+    }
+    #btn-crop {
+        appearance: none;
+        background-color: #000000;
+        border: 2px solid #1A1A1A;
+        border-radius: 15px;
+        box-sizing: border-box;
+        color: #FFFFFF;
+        cursor: pointer;
+        display: inline-block;
+        font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        font-size: 16px;
+        font-weight: 600;
+        line-height: normal;
+        min-width: 0;
+        margin-left: auto;
+        margin-right: auto;
+        outline: none;
+        padding: 10px 12px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        width: 100px;
+        will-change: transform;
+    }
+    #btn-crop:disabled {
+        pointer-events: none;
+    }
+
+    #btn-crop:hover {
+        box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+        transform: translateY(-2px);
+    }
+    #btn-crop:active {
+        box-shadow: none;
+        transform: translateY(0);
+    }
+    #output {
+        margin: 0 5px;
+        display: block;
+        max-width: 100%;
+    }
+</style>
+<body>
+    <div class="main-container">
+        <div class="img-container">
+            <input type="file" id="image-input" accept="image/*" onchange="loadImage(event)">
+            <img id="image" src="" alt="Uploaded Image" style="display: none; max-width: 100%; height: auto;">
+        </div>        
+        <button id="btn-crop">Crop</button>
+        <div class="cropped-container">
+            <img src="" id="output">
+        </div>
+    </div>
+    <script>
+        let cropper; // Khai báo biến cropper
+
+        document.querySelector('#btn-crop').addEventListener('click', function() {
+            if (cropper) { // Kiểm tra nếu cropper đã được khởi tạo
+                var croppedImage = cropper.getCroppedCanvas().toDataURL("image/png");
+                document.getElementById('output').src = croppedImage;
+                document.querySelector(".cropped-container").style.display = 'flex';
+            }
+        });
+
+        function loadImage(event) {
+            const image = document.getElementById('image');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    image.src = e.target.result; 
+                    image.style.display = 'block'; 
+
+                    // Khởi tạo Cropper sau khi ảnh đã được tải
+                    if (cropper) {
+                        cropper.destroy(); // Hủy cropper cũ nếu đã có
+                    }
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1.7777777777777777,
+                        viewMode: 1, // Cho phép cắt ảnh trong khung
+                    });
+                }
+
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
